@@ -1,54 +1,65 @@
-# React + TypeScript + Vite
+# Meu Projeto React Escalável
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Bem-vindo ao meu projeto React! Esta é uma aplicação escalável construída com React, React Router DOM v6 e Zustand para gerenciamento de estado. O objetivo é fornecer uma estrutura modular e organizada para facilitar a adição de novas funcionalidades e a manutenção do código.
 
-Currently, two official plugins are available:
+## Tecnologias Utilizadas
+- **React**: Biblioteca principal para construção da interface.
+- **React Router DOM v6**: Gerenciamento de rotas dinâmicas e modulares.
+- **Zustand**: Gerenciamento de estado leve e flexível.
+- **TypeScript**: Tipagem estática para maior segurança e produtividade.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Estrutura do Projeto
 
-## Expanding the ESLint configuration
+src/
+├── main.tsx              # Ponto de entrada com BrowserRouter
+├── App.tsx              # Renderiza as rotas definidas
+├── routes/              # Configuração modular de rotas
+│   ├── index.ts         # Centraliza todas as rotas
+│   ├── paths/           # Definições de rotas específicas
+│   │   ├── home.ts      # Rota "/"
+│   │   └── about.ts     # Rota "/about"
+├── pages/               # Páginas organizadas em pastas
+│   ├── Home/            # Página inicial
+│   │   ├── index.tsx    # Componente da página
+│   │   └── store.tsx    # Store específica com Zustand
+│   ├── About/           # Página "Sobre"
+│   │   ├── index.tsx    # Componente da página
+│   │   └── store.tsx    # Store específica com Zustand
+├── utils/               # Funções utilitárias
+│   └── zustandUtils.ts  # Função setValue genérica para Zustand
+└── components/          # (Futuro) Componentes reutilizáveis
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Rotas
+As rotas são definidas de forma modular na pasta `routes/`. Cada arquivo em `routes/paths/` representa uma rota específica, e elas são centralizadas em `routes/index.ts`. Rotas atuais:
+- **`/`**: Página inicial (`Home`).
+- **`/about`**: Página "Sobre" (`About`).
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Para adicionar uma nova rota:
+1. Crie uma pasta em `pages/` (ex.: `Contact/`).
+2. Adicione `index.tsx` (componente) e `store.tsx` (estado).
+3. Crie um arquivo em `routes/paths/` (ex.: `contact.ts`) com a definição da rota.
+4. Atualize `routes/index.ts` para incluir a nova rota.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Gerenciamento de Estado
+O Zustand é usado para gerenciar o estado de forma simples e escalável. Cada página tem sua própria store localizada em `pages/[NomeDaPagina]/store.tsx`. As stores utilizam uma função genérica `setValue`, definida em `utils/zustandUtils.ts`, que permite atualizar qualquer propriedade do estado (simples ou aninhada) sem setters específicos.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Exemplo de uso na página `Home`:
+```tsx
+// src/pages/Home/store.tsx
+interface HomeState {
+  counter: number;
+  title: string;
+  settings: { theme: string; fontSize: number };
+  setValue: <V>(path: string | string[], value: V) => void;
+}
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+export const useHomeStore = create<HomeState>((set) => ({
+  counter: 0,
+  title: 'Bem-vindo à Home',
+  settings: { theme: 'light', fontSize: 16 },
+  setValue: createSetValue(set),
+}));
+
+const { counter, setValue } = useHomeStore();
+setValue('counter', counter + 1); // Atualiza contador
+setValue('settings.theme', 'dark'); // Atualiza propriedade aninhada
