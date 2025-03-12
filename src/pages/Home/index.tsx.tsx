@@ -1,5 +1,5 @@
 import { useHomeStore } from "./store";
-import Logo from "../../assets/icons/logo.svg";
+import Logo from "../../assets/icons/Logo.svg";
 import eat_here from "../../assets/icons/eat_here.svg";
 import to_take from "../../assets/icons/to_take.svg";
 import { useNavigate } from "react-router-dom";
